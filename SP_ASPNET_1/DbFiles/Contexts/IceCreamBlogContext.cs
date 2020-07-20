@@ -14,6 +14,8 @@ namespace SP_ASPNET_1.DbFiles.Contexts
         {
 
         }
+        public DbSet<PostComment> Comments { get; set; }
+        public DbSet<PostLike> Likes { get; set; }
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }

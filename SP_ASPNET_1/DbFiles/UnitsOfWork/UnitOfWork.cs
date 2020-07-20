@@ -11,21 +11,37 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
 {
     public interface IUnitOfWork
     {
-        IRepository<BlogPost> BlogPostSchoolRepository { get; }
+        IBlogPostRepository BlogPostSchoolRepository { get; }
+        //IRepository<BlogPost> BlogPostSchoolRepository { get; }
+        IRepository<PostComment> PostCommentRepository { get; }
         IRepository<Author> AuthorSchoolRepository { get; }
         IRepository<ProductLine> ProductLineSchoolRepository { get; }
         IRepository<ProductItem> ProductItemSchoolRepository { get; }
+        void Save();
     }
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly IceCreamBlogContext _context = new IceCreamBlogContext();
 
         private IRepository<Author> _authorSchoolRepository;
-        private IRepository<BlogPost> _blogPostSchoolRepository;
+        private IBlogPostRepository _blogPostSchoolRepository;
+        private IRepository<PostComment> _PostCommentRepository;
         private IRepository<ProductLine> _productLineSchoolRepository;
         private IRepository<ProductItem> _productItemSchoolRepository;
 
-        public IRepository<BlogPost> BlogPostSchoolRepository
+        public IRepository<PostComment> PostCommentRepository
+        {
+            get
+            {
+                if (this._PostCommentRepository == null)
+                {
+                    this._PostCommentRepository = new BaseRepository<PostComment>(this._context);
+                }
+                return _PostCommentRepository;
+            }
+        }
+
+        public IBlogPostRepository BlogPostSchoolRepository
         {
             get
             {

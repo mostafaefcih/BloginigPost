@@ -1,26 +1,29 @@
 ﻿using SP_ASPNET_1.DbFiles.Operations;
 using SP_ASPNET_1.Models;
 using SP_ASPNET_1.ViewModels;
+using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SP_ASPNET_1.BusinessLogic;
-using System;
 
 namespace SP_ASPNET_1.Controllers
 {
     [RoutePrefix("Blog")]
     public class BlogPostController : Controller
     {
-        private readonly BlogPostOperations _blogPostOperations = new BlogPostOperations();
-
+        private readonly IBlogPostOperations _blogPostOperations;//= new BlogPostOperations();
+        public BlogPostController(IBlogPostOperations blogPostOperations)
+        {
+            _blogPostOperations = blogPostOperations;
+        }
         [Route("")]
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index(int page=1 ,int pageSize=2)
         {
             //return this.View();
-            BlogIndexViewModel result = this._blogPostOperations.GetBlogIndexViewModel();
+            BlogIndexViewModel result = await this._blogPostOperations.GetBlogIndexViewModelAsync(page ,pageSize);
             ViewBag.Title = "Blog";
-            return this.View(result);
+            return this.View(result);   
         }
 
 
@@ -114,6 +117,7 @@ namespace SP_ASPNET_1.Controllers
         {
             try
             {
+                //if(id==null)
                 this._blogPostOperations.Delete(id);
 
                 //CHECK: should return to blogs
@@ -124,5 +128,32 @@ namespace SP_ASPNET_1.Controllers
                 return this.HttpNotFound();
             }
         }
+        [Route("Like/{postId:int}")]
+        [HttpGet]
+        public JsonResult LikePost(int postId)
+        {
+            var PostLike = new PostLike()
+            {
+                DateTime = DateTime.Now,
+                AuthorId = 1,
+                PostId = postId
+            };
+         var counter=  _blogPostOperations.LikePost(PostLike);
+            //return counter.ToString();
+            return Json(counter, JsonRequestBehavior.AllowGet);
+        }
+        [Route("unLike/{postId:int}")]
+        [HttpGet]
+        public ActionResult UnLikePost(int postId)
+        {
+            var counter = _blogPostOperations.UnlikePost(1, postId);
+            
+            return View();
+        }
+
+        int CountPostsLikesPerAuther(int autherId) {
+            return _blogPostOperations.CountPostsLikesPerAuther(autherId);
+        }
+
     }
 }

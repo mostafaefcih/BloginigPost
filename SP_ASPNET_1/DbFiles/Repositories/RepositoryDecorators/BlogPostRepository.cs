@@ -11,7 +11,15 @@ using SP_ASPNET_1.Models;
 
 namespace SP_ASPNET_1.DbFiles.Operations
 {
-    public class BlogPostRepository : BaseRepository<BlogPost>
+    public interface IBlogPostRepository: IRepository<BlogPost>
+    {
+        PostLike LikePost(PostLike like);
+        PostLike UnLikePost(int userId,int postId);
+        int GetLikeCount(int postId);
+        //  this method to count all likes on auther's posts
+        int CountPostsLikesPerAuther(int autherId);
+    }
+    public class BlogPostRepository : BaseRepository<BlogPost>, IBlogPostRepository
     {
         public BlogPostRepository(IceCreamBlogContext context) : base(context)
         {
@@ -30,16 +38,38 @@ namespace SP_ASPNET_1.DbFiles.Operations
             //TODO: IncludeImagePrefix dirty
             return new Task<IEnumerable<BlogPost>>(() =>
             {
-                return this.GetAsync(filter, orderBy, includeProperties).Result
-                    .IncludeImagePrefix(Constants.BLOGPOST_IMAGE_PREFIX);
+                return this.GetAsync(filter, orderBy, includeProperties).Result;
+                    //.IncludeImagePrefix(Constants.BLOGPOST_IMAGE_PREFIX);
             });
         }
 
         //TODO: IncludeImagePrefix dirty
         public new IEnumerable<BlogPost> Get(Expression<Func<BlogPost, bool>> filter = null, Func<IQueryable<BlogPost>, IOrderedQueryable<BlogPost>> orderBy = null, string includeProperties = "")
         {
-            return base.Get(filter, orderBy, includeProperties)
-                .IncludeImagePrefix(Constants.BLOGPOST_IMAGE_PREFIX);
+            return base.Get(filter, orderBy, includeProperties);
+                //.IncludeImagePrefix(Constants.BLOGPOST_IMAGE_PREFIX);
+        }
+
+        public PostLike LikePost(PostLike like)
+        {
+            return _context.Likes.Add(like);
+        }
+
+        public PostLike UnLikePost(int userId,int postId)
+        {
+            return _context.Likes.Remove(_context.Likes.Where(l => l.PostId == postId && l.AuthorId == userId).FirstOrDefault());
+        }
+
+        public int GetLikeCount(int postId)
+        {
+            return _context.Likes.Count(l => l.PostId == postId);
+        }
+
+
+        public int CountPostsLikesPerAuther(int autherId)
+        {
+          var postsId=  _context.BlogPosts.Where(c => c.Author.AuthorID == autherId).Select(c=>c.BlogPostID);
+            return _context.Likes.Where(c => postsId.Contains(c.PostId)).Count();
         }
     }
 }

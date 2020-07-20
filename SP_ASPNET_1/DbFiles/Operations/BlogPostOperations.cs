@@ -7,21 +7,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using WebGrease.Css.Visitor;
 
 namespace SP_ASPNET_1.DbFiles.Operations
 {
-    public class BlogPostOperations
-    {
-        private UnitOfWork _unitOfWork = new UnitOfWork();
+    public interface IBlogPostOperations {
 
-        public async Task<BlogIndexViewModel> GetBlogIndexViewModelAsync()
+           Task<BlogIndexViewModel> GetBlogIndexViewModelAsync(int page, int pageSize);
+        BlogIndexViewModel GetBlogIndexViewModel();
+        BlogPost GetBlogPostByIdD(int id);
+
+        BlogSinglePostViewModel GetBlogPostByIdFull(int id);
+          BlogSinglePostViewModel GetLatestBlogPost();
+        BlogSinglePostViewModel GetRandomBlogPost();
+        void Create(BlogPost blogPost);
+        void Update(BlogPost blogPost);
+        void Delete(int id);
+          int LikePost(PostLike like);
+
+        int UnlikePost(int userid, int PostId);
+
+       int CountPostsLikesPerAuther(int autherId);
+    }
+    public class BlogPostOperations: IBlogPostOperations
+    {
+        public BlogPostOperations()
         {
-            List<BlogPost> blogPosts = (await _unitOfWork.BlogPostSchoolRepository.GetAsync(null, b => b.OrderByDescending(d => d.DateTime), "Author")).ToList();
+
+        }
+        private IUnitOfWork _unitOfWork;//= new UnitOfWork();
+        public BlogPostOperations(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<BlogIndexViewModel> GetBlogIndexViewModelAsync(int page, int pageSize)
+        {
+            PagedResult<BlogPost> blogPosts = (await _unitOfWork.BlogPostSchoolRepository.GetAsync(null, b => b.OrderByDescending(d => d.DateTime), "Comments,Likes", page ,pageSize));
 
             return new BlogIndexViewModel()
             {
-                BlogPosts = blogPosts.GetRange(1, blogPosts.Count - 1),
-                BlogPost = blogPosts.Take(1).FirstOrDefault()
+                BlogPosts = blogPosts,
+                BlogPost = blogPosts.Results.FirstOrDefault()
             };
         }
 
@@ -33,11 +59,12 @@ namespace SP_ASPNET_1.DbFiles.Operations
             {
                 return new BlogIndexViewModel();
             }
-            return new BlogIndexViewModel()
-            {
-                BlogPosts = blogPosts.GetRange(1, blogPosts.Count - 1),
-                BlogPost = blogPosts.Take(1).FirstOrDefault()
-            };
+            //return new BlogIndexViewModel()
+            //{
+            //    BlogPosts = blogPosts.GetRange(1, blogPosts.Count - 1),
+            //    BlogPost = blogPosts.Take(1).FirstOrDefault()
+            //};
+            return null;
         }
 
         public BlogPost GetBlogPostByIdD(int id)
@@ -83,7 +110,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
             return randomPost.ToBlogSinglePostViewModel();
         }
 
-        internal void Create(BlogPost blogPost)
+        public void Create(BlogPost blogPost)
         {
             try
             {
@@ -111,6 +138,31 @@ namespace SP_ASPNET_1.DbFiles.Operations
                 throw;
             }
             
+        }
+
+        public void Update(BlogPost blogPost)
+        {
+            _unitOfWork.BlogPostSchoolRepository.Update(blogPost);
+            _unitOfWork.Save();
+        }
+
+        public int LikePost(PostLike like) {
+           var result= _unitOfWork.BlogPostSchoolRepository.LikePost(like);
+            _unitOfWork.Save();
+            return _unitOfWork.BlogPostSchoolRepository.GetLikeCount(result.PostId);
+        
+        }
+        public int UnlikePost(int userId, int postId) { 
+              
+       var result= _unitOfWork.BlogPostSchoolRepository.UnLikePost(userId, postId);
+            _unitOfWork.Save();
+            return _unitOfWork.BlogPostSchoolRepository.GetLikeCount(result.PostId);
+
+        }
+
+        public int CountPostsLikesPerAuther(int autherId)
+        {
+            return _unitOfWork.BlogPostSchoolRepository.CountPostsLikesPerAuther(autherId);
         }
     }
 }

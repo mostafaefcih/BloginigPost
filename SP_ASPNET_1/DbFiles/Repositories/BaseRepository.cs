@@ -1,4 +1,5 @@
 ﻿using SP_ASPNET_1.DbFiles.Contexts;
+using SP_ASPNET_1.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,11 +17,12 @@ namespace SP_ASPNET_1.DbFiles.Repositories
         void Insert(T entity);
         void Update(T entityToUpdate);
         T GetByID(object ID);
-        Task<IEnumerable<T>> GetAsync(
+
+        Task<PagedResult<T>> GetAsync(
             Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>,
             IOrderedQueryable<T>> orderBy = null,
-            string includeProperties = "");
+            string includeProperties = "", int page = 1, int pageSize = 10);
 
         IEnumerable<T> Get(
             Expression<Func<T, bool>> filter = null,
@@ -51,7 +53,6 @@ namespace SP_ASPNET_1.DbFiles.Repositories
         {
             return this._dbSet.Find(ID);
         }
-
         /// <summary>
         /// Gets specific entities and their navigation properties.
         /// </summary>
@@ -61,7 +62,8 @@ namespace SP_ASPNET_1.DbFiles.Repositories
         /// <code>"prop1, prop2"</code>
         /// </param>
         /// <returns>Database entities</returns>
-        public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null, Func<IQueryable<T> , IOrderedQueryable<T>> orderBy = null, string includeProperties = "")
+        public async Task<PagedResult<T>> GetAsync(Expression<Func<T, bool>> filter = null, Func<IQueryable<T> , IOrderedQueryable<T>> orderBy = null, 
+            string includeProperties = "", int page=1 , int pageSize=10)
         {
             IQueryable<T> query = Entities;
 
@@ -76,16 +78,35 @@ namespace SP_ASPNET_1.DbFiles.Repositories
                 query = query.Include(includeProperty);
             }
 
-            if (orderBy != null)
-            {
-                return await orderBy(query).ToListAsync();
-            }
-            else
-            {
-                return await query.ToListAsync();
-            }
+            //if (orderBy != null)
+            //{
+            //    return await orderBy(GetPagedResultForQuery(query, page, pageSize));
+            //}
+            //else
+            //{
+                //return await query.ToListAsync();
+              return  GetPagedResultForQuery(query, page, pageSize, orderBy);
+            //}
         }
+        private static PagedResult<T> GetPagedResultForQuery(
+           IQueryable<T> query, int page, int pageSize, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+        {
+            var result = new PagedResult<T>();
+            result.CurrentPage = page;
+            result.PageSize = pageSize;
+            result.RowCount = query.Count();
+            var pageCount = (double)result.RowCount / pageSize;
+            result.PageCount = (int)Math.Ceiling(pageCount);
+            var skip = (page - 1) * pageSize;
+            //if (orderBy != null)
+            //{
+            //    result.Results = orderBy(query);
 
+            //}
+            result.Results = orderBy(query).Skip(skip).Take(pageSize).AsNoTracking().ToList();
+            
+            return result;
+        }
         /// <summary>
         /// Gets specific entities and their navigation properties.
         /// </summary>
@@ -95,6 +116,8 @@ namespace SP_ASPNET_1.DbFiles.Repositories
         /// <code>"prop1, prop2"</code>
         /// </param>
         /// <returns>Database entities</returns>
+        /// 
+        
         public IEnumerable<T> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = "")
         {
             IQueryable<T> query = Entities;
@@ -111,11 +134,11 @@ namespace SP_ASPNET_1.DbFiles.Repositories
 
             if (orderBy != null)
             {
-                return orderBy(query).ToList();
+                return orderBy(query).AsNoTracking().ToList();
             }
             else
             {
-                return query.ToList();
+                return query.AsNoTracking().ToList();
             }
         }
 
@@ -139,5 +162,7 @@ namespace SP_ASPNET_1.DbFiles.Repositories
             }
             this._dbSet.Remove(entity);
         }
+
+       
     }
 }

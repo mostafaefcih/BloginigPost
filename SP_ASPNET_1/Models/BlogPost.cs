@@ -13,5 +13,9 @@ namespace SP_ASPNET_1.Models
         public DateTime DateTime { get; set; }
         public string Content { get; set; }
         public string ImageUrl { get; set; }
+
+        public ICollection<PostComment> Comments { get; set; }
+        public ICollection<PostLike> Likes { get; set; }
+
     }
 }
