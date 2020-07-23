@@ -1,0 +1,102 @@
+﻿* {
+  font-family: lato-regular-webfont, sans-serif;
+  color: #7A6666; }
+
+h1, h2, h3 {
+  font-weight: lighter; }
+
+h1 {
+  background-color: #c8c10d;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 32px 0;
+  margin: 0;
+  margin: 0;
+  color: #7A6666; }
+
+h1--inverted {
+  color: #FFFFFF; }
+
+h2 {
+  text-transform: uppercase;
+  color: #E32A62;
+  font-size: 28px; }
+
+.h2--smaller {
+  font-size: 20px; }
+
+h3 {
+  color: #7A6666;
+  text-transform: uppercase;
+  font-size: 16px; }
+
+.text--white {
+  color: #FFFFFF; }
+
+.text--gray {
+  color: #EAE7E8; }
+
+.title {
+  margin-bottom: 21px; }
+
+.Blog {
+  display: flex;
+  flex-flow: column nowrap; }
+
+.Blog__Posts {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  padding: 10px;
+  flex-wrap: wrap; }
+
+.Posts__Item {
+  width: 50%;
+  min-width: 400px;
+  flex-grow: 1;
+  margin: 10px; }
+
+.Posts__Item__Link {
+  text-align: center; }
+
+.Post__Hr {
+  border: 0;
+  height: 1px;
+  background: #333;
+  background-image: linear-gradient(to right, #ccc, #333, #ccc); }
+
+.Posts__Featured {
+  display: flex;
+  flex-flow: column nowrap;
+  max-width: 620px;
+  list-style: none; }
+  .Posts__Featured li {
+    margin-right: 10px; }
+
+.SinglePost {
+  display: flex;
+  flex-flow: column nowrap;
+  max-width: 620px; }
+
+.Posts__Recent {
+  width: 280px;
+  background-color: #EAE7E8;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-flow: column nowrap; }
+  .Posts__Recent > * {
+    max-width: 200px; }
+  .Posts__Recent .Posts__Recent-title {
+    color: #E32A62;
+    margin: 0;
+    padding: 42px 0 29px;
+    text-align: center;
+    text-transform: capitalize;
+    background-color: inherit; }
+
+.Post__Image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin-right: 30px; }

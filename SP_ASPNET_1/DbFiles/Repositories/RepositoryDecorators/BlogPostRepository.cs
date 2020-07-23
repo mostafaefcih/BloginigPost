@@ -17,7 +17,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
         PostLike UnLikePost(int userId,int postId);
         int GetLikeCount(int postId);
         //  this method to count all likes on auther's posts
-        int CountPostsLikesPerAuther(int autherId);
+        int CountPostsLikesPerAuther(string autherId);
     }
     public class BlogPostRepository : BaseRepository<BlogPost>, IBlogPostRepository
     {
@@ -57,7 +57,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
 
         public PostLike UnLikePost(int userId,int postId)
         {
-            return _context.Likes.Remove(_context.Likes.Where(l => l.PostId == postId && l.AuthorId == userId).FirstOrDefault());
+            return _context.Likes.Remove(_context.Likes.Where(l => l.PostId == postId && l.AuthorId == Convert.ToString(userId)).FirstOrDefault());
         }
 
         public int GetLikeCount(int postId)
@@ -66,9 +66,9 @@ namespace SP_ASPNET_1.DbFiles.Operations
         }
 
 
-        public int CountPostsLikesPerAuther(int autherId)
+        public int CountPostsLikesPerAuther(string autherId)
         {
-          var postsId=  _context.BlogPosts.Where(c => c.Author.AuthorID == autherId).Select(c=>c.BlogPostID);
+          var postsId=  _context.BlogPosts.Where(c => c.Author.Id == autherId).Select(c=>c.BlogPostID);
             return _context.Likes.Where(c => postsId.Contains(c.PostId)).Count();
         }
     }

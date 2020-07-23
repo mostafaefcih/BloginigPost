@@ -3,86 +3,63 @@
 
 
 @{ Layout = "~/Views/Shared/Blog/_BlogLayout.cshtml"; }
-    <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style>
-            .fa {
-                font-size: 50px;
-                cursor: pointer;
-                user-select: none;
-            }
 
-                .fa:hover {
-                    color: darkblue;
-                }
-        </style>
-    </head>
 @if (Model.BlogPosts != null)
 {
-    foreach (BlogPost post in Model.BlogPosts.Results)
-    {
-        <div class="card">
-            <img src="@Html.AttributeEncode(Constants.POST_IMAGE_PREFIX + post.ImageUrl)" alt="post image preview" class="Post__Image">
-            <div class="card-body">
-                <h6 class="card-title">
-                    <a target="_blank" href='@Url.Action("SinglePost", new { id = @post.BlogPostID})' class="c-btn"> @(string.IsNullOrEmpty( post.Title)?"Load Details": post.Title)</a>
-                </h6>
-                <p class="text-break">
-                    @post.Content.Substring(0, 200)...
-                </p>
-            </div>
-            <small class="text-muted">
-                By @post.Author on <sup>
-                    @post.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)
-                </sup>
-            </small>
-            <div class="card-footer">
-
-                <div>
-                    <button data-post-id="@post.BlogPostID" type="button" class="like-button" title="Click to like this post!">
-                        <i  class="fa fa-thumbs-up"></i> Like
-                        |
-                        <span  id="@("likeCounter"+post.BlogPostID)" class="like-count">@(post?.Likes?.Count())</span>
-                    </button>
-                    @*<button class="btn btn-block btn-primary like" data-post-id="@post.BlogPostID"><i class="fa fa-thumbs-up"></i> Like</button>*@
-                    <button type="button" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right add-comment"
-                            data-post-id="@post.BlogPostID">
-                        <i class="material-icons">add</i>
-                    </button>
-                    <input type="text" class="col-lg-6" name="comment" id="@("comment"+post.BlogPostID)">
-                </div>
-                <div id="@("dvComments"+post.BlogPostID)">@Html.Partial("~/Views/PostComment/_postComments.cshtml", post.Comments)</div>
-
-                <br />
-            </div>
-        </div>
-        @*<li class="Posts__Item">
+    var notAutenticated = !User.Identity.IsAuthenticated;
+    <div class="blog-container">
+        @foreach (BlogPost post in Model.BlogPosts.Results)
+        {
+            <div class="Posts__Item">
                 <img src="@Html.AttributeEncode(Constants.POST_IMAGE_PREFIX + post.ImageUrl)" alt="post image preview" class="Post__Image">
-                <div class="Post-Preview__Content">
-                    <h2>@post.Title</h2>
-                    <p>By @post.Author on @post.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)</p>
-                    <br>
-                    <p>@post.Content.Substring(0, 200)...</p>
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a target="_blank" href='@Url.Action("SinglePost", new { id = @post.BlogPostID})' class="c-btn"> @(string.IsNullOrEmpty( post.Title)?"Load Details": post.Title)</a>
+                    </h6>
+                    <p class="text-break">
+                        @post.Content.Substring(0, 200)...
+                    </p>
                 </div>
-                <div>
-                    <button type="button" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right add-comment"
-                            data-post-id="@post.BlogPostID">
-                        <i class="material-icons">add</i>
-                    </button> <input type="text" class="form-control col-lg-2" name="comment" id="@("comment"+post.BlogPostID)">
-                    <div>@Html.Partial("~/Views/PostComment/_postComments.cshtml", post.Comments)</div>
-                </div>
-            </li>
-            <li class="Posts__Item__Link">
-                <button onClick="location.href='@Url.Action("SinglePost", new { id = @post.BlogPostID})'" class="c-btn">read more</button>
-                <hr class="Post__Hr" />
-            </li>*@
-    }
-    @*<li>
-                <button class="c-btn">load more</button>
-            </li>
+                <small class="text-muted">
+                    By @post.Author on <sup>
+                        @post.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)
+                    </sup>
+                </small>
+                <div class="card-footer">
+                    <div>
+                        @{
 
-        </div>*@
+                            <button data-post-id="@post.BlogPostID" disabled="@notAutenticated" type="button" class="like-button" title="Click to like this post!">
+                                <i class="fa fa-thumbs-up"></i> Like
+                                |
+                                <span id="@("likeCounter"+post.BlogPostID)" class="like-count">@(post?.Likes?.Count())</span>
+                            </button>
+                            @*<button class="btn btn-block btn-primary like" data-post-id="@post.BlogPostID"><i class="fa fa-thumbs-up"></i> Like</button>*@
+                            <button type="button" disabled="@notAutenticated" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right add-comment"
+                                    data-post-id="@post.BlogPostID">
+                                <i class="material-icons">add</i>
+                            </button>
+                            <input type="text" class="col-lg-6" name="comment" id="@("comment"+post.BlogPostID)">
+                        }
+
+                    </div>
+                    <div id="@("dvComments"+post.BlogPostID)">@Html.Partial("~/Views/PostComment/_postComments.cshtml", post.Comments)</div>
+                    <br />
+                </div>
+            </div>
+        }
+        <div class="pagination-container">
+            <ul class="pagination">
+                @for (var p = 1; p <= Model.BlogPosts.PageCount; p++)
+                {
+                    <a href="@Url.Action("Index", new { page = p })" class="btn btn-default">@p</a>
+                }
+            </ul>
+        </div>
+    </div>
+    
 }
+
 else
 {
     <h1>There are no blog posts :-(</h1>
@@ -117,7 +94,7 @@ else
                             dvComments.html(content);
                         },
                         error: function (e) { }
-                    });     
+                    });
 
                     //refresh list
                 }
@@ -145,7 +122,7 @@ else
             });
             $('.edit-comment').off('click').on('click', function (e) {
                 e.preventDefault();
-                var btn=$(this)
+                var btn = $(this)
                 var commentId = $(this).attr("data-comment-id");
                 var commentBodyTag = $('#tdcontent' + commentId);
                 var id = commentBodyTag.attr('id');
@@ -175,7 +152,7 @@ else
                                 alert('error')
                             }
                             //alert('ss')
-                             //$('#tdcontent2 div.modal-content').html(content);
+                            //$('#tdcontent2 div.modal-content').html(content);
                         },
                         error: function (e) { }
                     });
@@ -184,40 +161,16 @@ else
                 }
                 else {
                     var input = $('<input  class="form-control"  type="text" />');
-                      commentValBeforUpdate = commentBodyTag.text().trim();
+                    commentValBeforUpdate = commentBodyTag.text().trim();
                     var txt = input.val(commentValBeforUpdate);
                     commentBodyTag.html(txt);
                     btn.text('update');
                     btn.removeClass('edit-comment').addClass('update-comment');
                     return;
                 }
-                
+
             });
-            //$('.update-comment').click(function (e) {
-            //    var commentId = $(this).attr("data-comment-id");
-            //    var postId = $(this).attr('data-post-id');
-            //    var commentBody = $('#tdcontent' + commentId).val();
-            //    var url = "/Comment/Edit/" + commentId;
 
-            //    var comment = {
-            //        commentId: commentId,
-            //        postId: postId,
-            //        content: commentBody
-
-            //    }
-            //    e.preventDefault();
-            //    $.ajax({
-            //        url: url,
-            //        type: 'POST',
-            //        data: JSON.stringify(comment),
-            //        contentType: 'application/json; charset=utf-8',
-            //        success: function (content) {
-                       
-            //            // $('#RoleEditModal div.modal-content').html(content);
-            //        },
-            //        error: function (e) { }
-            //    });
-            //});
             $('.like-button').off('click').on('click', function (e) {
                 //var ss = this.classList.toggle("fa-thumbs-down");
                 //ele.classList.toggle("fa-thumbs-down");
@@ -237,14 +190,6 @@ else
                     error: function (e) { }
                 });
             });
-            //confirm page deletion here
-            //  * /
-            //$("a.delete").click(function () {
-            //    if (!confirm("are you sure want to delete this record ")) return false; {
-
-            //    }
-            //})
         });
     </script>
 }
-@*<script src="~/Views/PostComment/comment.js"></script>*@

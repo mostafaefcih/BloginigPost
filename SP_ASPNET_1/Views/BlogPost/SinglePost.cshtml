@@ -8,19 +8,22 @@
 
 @if (Model != null)
 {
-<div class="SinglePost">
-    <img src="@Html.AttributeEncode(Constants.POST_IMAGE_PREFIX + Model.BlogPost.ImageUrl)" alt="@Path.GetFileNameWithoutExtension(Model.BlogPost.ImageUrl)" />
-    <h2>new chills for summer</h2>
-    <p>By @Model.Author.ToString() on @Model.BlogPost.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)</p>
-    <p>
-        @Model.BlogPost.Content
-    </p>
-    <p>
-        @Html.ActionLink("Edit", "EditBlogPost", new { id = Model.BlogPost.BlogPostID }) |
-        @Html.ActionLink("Back to List", "Index") |
-        @Html.ActionLink("Delete", "EditBlogPost", new { id = Model.BlogPost.BlogPostID }) |
-    </p>
-</div> }
+    <div class="SinglePost">
+        <img src="@Html.AttributeEncode(Constants.POST_IMAGE_PREFIX + Model.BlogPost.ImageUrl)" alt="@Path.GetFileNameWithoutExtension(Model.BlogPost.ImageUrl)" />
+        
+        <h2>new chills for summer</h2>
+        <p>By @Model.Author.ToString() on @Model.BlogPost.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)</p>
+        <p>
+            @Model.BlogPost.Content
+        </p>
+        <p>
+            @Html.ActionLink("Edit", "EditBlogPost", new { id = Model.BlogPost.BlogPostID }) |
+            @Html.ActionLink("Back to List", "Index") |
+            @Html.ActionLink("Delete", "EditBlogPost", new { id = Model.BlogPost.BlogPostID }) |
+        </p>
+        @{ 
+        <div id="@("dvComments"+@Model.BlogPost.BlogPostID)">@Html.Partial("~/Views/PostComment/_postComments.cshtml", Model.BlogPost.Comments)</div> }
+    </div> }
 else
 {
 <div class="SinglePost">

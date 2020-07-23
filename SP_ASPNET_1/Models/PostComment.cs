@@ -11,16 +11,21 @@ namespace SP_ASPNET_1.Models
     {
         [Key]
         public int CommentId { get; set; }
-        
+
         [ForeignKey(nameof(Post))]
+        [Required]
+
         public int PostId { get; set; }
         [ForeignKey(nameof(Author))]
-        public int AuthorId { get; set; }
+        [Required]
+
+        public string AuthorId { get; set; }
         public string Title { get; set; }
 
-            [Column(TypeName = "ntext")]
-          public string Content { get; set; }
-          public Author Author { get; set; }
+        [Column(TypeName = "ntext")]
+        [Required]
+        public string Content { get; set; }
+        public ApplicationUser Author { get; set; }
         public BlogPost Post { get; set; }
         public DateTime DateTime { get; set; }
 

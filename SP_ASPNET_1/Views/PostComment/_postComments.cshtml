@@ -1,4 +1,5 @@
-﻿@using SP_ASPNET_1.BusinessLogic
+﻿@using bl = SP_ASPNET_1.BusinessLogic
+@using Microsoft.AspNet.Identity
 
 @model IEnumerable<SP_ASPNET_1.Models.PostComment>
 
@@ -7,7 +8,7 @@
 
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Author.Name)
+            @Html.DisplayNameFor(model => model.Author.Surname)
         </th>
 
         <th>
@@ -16,44 +17,41 @@
         <th>
             @Html.DisplayNameFor(model => model.DateTime)
         </th>
-        <th></th>
+        <th>Actions</th>
     </tr>
     @if (Model == null)
     {
-        <div>no comments on this post</div>
+        <tr>no comments on this post</tr>
     }
     @foreach (var item in Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Author.Name)
+                @Html.DisplayFor(modelItem => item.Author.Surname)
             </td>
             <td id="@("tdcontent"+item.CommentId)">
                 @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
-                @item.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)
+                @item.DateTime.ToString(bl.Constants.DISPLAY_DATETIME_FORMAT)
             </td>
             <td>
-            <td><a href="#" class="waves-effect waves-block edit-comment" data-post-id="@item.PostId" data-comment-id="@item.CommentId">Edit</a></td>
-            <td>
-                <a href="#" class="waves-effect waves-block delete-comment" data-post-id="@item.PostId" data-comment-id="@item.CommentId">Delete</a>
-            @*</td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.CommentId }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.CommentId })
-            </td>*@
-        </tr>
-    }
-    @*<tr class="row">
-            <td class="col-lg-4">
-                <button type="button" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right add-comment">
-                    <i class="material-icons">add</i>
-                </button>
-            </td>
-            <td class="col-lg-8">
-                <input type="text" class="form-control col-lg-2" name="comment" id="@("comment")">
-            </td>
-        </tr>*@
+
+                @{
+                    var isAutorized = (User.Identity.IsAuthenticated && (User.Identity.GetUserId() == item.AuthorId));
+
+                    if(isAutorized)
+                    {
+                    <td> <a href="#" class="waves-effect waves-block edit-comment" data-post-id="@item.PostId" data-comment-id="@item.CommentId">Edit</a></td>
+                    <td>
+                        <a href="#" class="waves-effect waves-block delete-comment" data-post-id="@item.PostId" data-comment-id="@item.CommentId">Delete</a>
+                    </td>
+                     }
+                   }
+
+
+            </tr>
+        }
 
 </table>
 

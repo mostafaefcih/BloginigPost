@@ -1,4 +1,5 @@
-﻿using SP_ASPNET_1.DbFiles.Operations;
+﻿using Microsoft.AspNet.Identity;
+using SP_ASPNET_1.DbFiles.Operations;
 using SP_ASPNET_1.Models;
 using SP_ASPNET_1.ViewModels;
 using System;
@@ -70,10 +71,13 @@ namespace SP_ASPNET_1.Controllers
 
         [Route("Create")]
         [HttpPost]
+        [Authorize(Roles = "AUTHOR")]
         public ActionResult Create(BlogPost blogPost)
         {
             try
             {
+                blogPost.AuthorID=  User.Identity.GetUserId();
+                blogPost.DateTime = DateTime.Now;
                 this._blogPostOperations.Create(blogPost);
 
                 return RedirectToAction("Index");
@@ -86,6 +90,7 @@ namespace SP_ASPNET_1.Controllers
 
         [Route("Edit/{id:int?}")]
         [HttpGet]
+        [Authorize(Roles = "AUTHOR")]
         public ActionResult EditBlogPost(int id)
         {
             BlogPost blogPost;
@@ -97,6 +102,7 @@ namespace SP_ASPNET_1.Controllers
 
         [Route("Edit/{id:int}")]
         [HttpPost]
+        [Authorize(Roles = "AUTHOR")]
         public ActionResult Edit(int id, FormCollection collection)
         {
             try
@@ -113,6 +119,8 @@ namespace SP_ASPNET_1.Controllers
 
         [Route("Delete/{id:int}")]
         [HttpGet]
+        [Authorize(Roles ="AUTHOR")]
+
         public ActionResult Delete(int id)
         {
             try
@@ -130,12 +138,13 @@ namespace SP_ASPNET_1.Controllers
         }
         [Route("Like/{postId:int}")]
         [HttpGet]
+        [Authorize]
         public JsonResult LikePost(int postId)
         {
             var PostLike = new PostLike()
             {
                 DateTime = DateTime.Now,
-                AuthorId = 1,
+                AuthorId = User.Identity.GetUserId(),
                 PostId = postId
             };
          var counter=  _blogPostOperations.LikePost(PostLike);
@@ -144,6 +153,8 @@ namespace SP_ASPNET_1.Controllers
         }
         [Route("unLike/{postId:int}")]
         [HttpGet]
+        [Authorize]
+
         public ActionResult UnLikePost(int postId)
         {
             var counter = _blogPostOperations.UnlikePost(1, postId);
@@ -151,7 +162,8 @@ namespace SP_ASPNET_1.Controllers
             return View();
         }
 
-        int CountPostsLikesPerAuther(int autherId) {
+        int CountPostsLikesPerAuther( ) {
+            var autherId = User.Identity.GetUserId();
             return _blogPostOperations.CountPostsLikesPerAuther(autherId);
         }
 

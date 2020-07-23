@@ -1,4 +1,5 @@
-﻿using SP_ASPNET_1.DbFiles.Operations;
+﻿using Microsoft.AspNet.Identity;
+using SP_ASPNET_1.DbFiles.Operations;
 using SP_ASPNET_1.Models;
 using SP_ASPNET_1.ViewModels;
 using System;
@@ -50,8 +51,8 @@ namespace SP_ASPNET_1.Controllers
             {
                 
                 PostComment comment = new PostComment() { 
-                AuthorId=1, // logged in user
-                Content=CommentBody,
+                AuthorId=  User.Identity.GetUserId(), // logged in user
+                Content =CommentBody,
                 DateTime=DateTime.Now,
                 PostId=  postId,
                    Title=CommentBody
@@ -85,14 +86,12 @@ namespace SP_ASPNET_1.Controllers
             try
             {
                 if (comment.CommentId != id) throw new Exception("invalid comment");
-                comment.AuthorId = 1;
+                comment.AuthorId = User.Identity.GetUserId(); ;
                 comment.DateTime = DateTime.Now;
-                // TODO: Add update logic here
+               
 
                 _PostCommentOperations.Update(comment);
                 return Json(true, JsonRequestBehavior.AllowGet);
-                // TODO: Return to detail
-                //  return RedirectToAction("Details", new { id });
             }
             catch(Exception ex)
             {

@@ -16,6 +16,7 @@
             <img #logo src="~/Content/images/logo.png" /> <span class="spacer"></span>
             <nav>
                 <ul>
+
                     <li><a href="@Url.Action("Index", "Home")" class="@(@Html.IsActive("Home", "Index"))">HOME</a></li>
                     <li>
                         <a href="@Url.Action("About", "Home")" class="@(@Html.IsActive("Home", "About"))">ABOUT</a>
@@ -23,6 +24,7 @@
                             <li><a href="@Url.Action("Product", "Home")" class="@(@Html.IsActive("Home", "Product"))">PRODUCT</a></li>
                         </ul>
                     </li>
+
                     <li>
                         <a href="@Url.Action("Index", "BlogPost")" class="@(@Html.IsActive("BlogPost", "Index"))">BLOG</a>
                         <ul>
@@ -30,8 +32,14 @@
                         </ul>
                     </li>
                     <li><a href="@Url.Action("Contact", "Home")" class="@(@Html.IsActive("Home", "Contact"))">CONTACT</a></li>
+                    <li>
+                        <a>Account</a>
+                        @Html.Partial("_LoginPartial")
+                    </li>
                 </ul>
+
             </nav>
+
         </div>
     </header>
     @RenderBody()
@@ -50,3 +58,5 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")

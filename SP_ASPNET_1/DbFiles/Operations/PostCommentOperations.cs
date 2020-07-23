@@ -65,8 +65,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
 
         public Task<PagedResult<PostComment>> GetCommentsAsync(int postId ,int page, int pageSize)
         {
-            // 1 will be changed
-            return _unitOfWork.PostCommentRepository.GetAsync(b=>b.PostId==postId, b => b.OrderByDescending(d => d.DateTime), "",page,pageSize);
+            return _unitOfWork.PostCommentRepository.GetAsync(b=>b.PostId==postId, b => b.OrderByDescending(d => d.DateTime), "Author", page,pageSize);
         }
   
 
@@ -77,7 +76,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
 
         IEnumerable<PostComment> IPostCommentOperations.GetCommentsPerPost(int postId)
         {
-            return _unitOfWork.PostCommentRepository.Get(b => b.PostId == postId, b => b.OrderByDescending(d => d.DateTime), "");
+            return _unitOfWork.PostCommentRepository.Get(b => b.PostId == postId, b => b.OrderByDescending(d => d.DateTime), "Author");
 
         }
 

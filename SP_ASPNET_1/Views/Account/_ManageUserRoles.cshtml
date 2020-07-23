@@ -1,0 +1,57 @@
+﻿@model SP_ASPNET_1.ViewModels.Account.EditUserVM
+
+
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Manage Roles</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form id="frmManageUserRoles">
+            <div class="form-group">
+                <label class="col-form-label">User name:</label>
+                <label class="col-form-label"> @Model.User.UserName</label>
+                @Html.HiddenFor(c => c.User.Id ,new { @id="userId"})
+            </div>
+            <div class="form-group">
+                <label class="col-form-label">Roles:</label>
+                @*@Html.ListBoxFor("Roles", new SelectList(Model.Roles, "Id", "Name"), "Select A Rola", new { @class = "form-control", @multiple = "multiple" })*@
+                @Html.ListBoxFor(m => m.Roles, new SelectList(Model.Roles, "Id", "Name","2"), new { @Id = "lstRoles", @style = "width:200px;height:60px;" })
+                @*@Html.DropDownList("Roles", new SelectList(Model.Roles, "Id", "Name", Model.User.Roles), "Select A Rola", new { @class = "form-control", @multiple = "multiple" })*@
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" data-user-id="@Model.User.Id"  id="btnSubmit" class="btn btn-primary">Submit</button>
+    </div>
+ 
+    <script>
+        $('#btnSubmit').click(function (e) {
+            var userId = $(this).attr("data-user-id");
+            //var url = '/Account/ManageUserRoles?userId=' + userId;
+            var url = '/Account/AssignRoleToUser';
+            var rolesId = $('#lstRoles').val();
+            var data = { userId: userId, rolesIds: rolesId };
+            debugger;
+            e.preventDefault();
+            $.ajax({
+                url: url,
+                data: JSON.stringify(data),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (content) {
+                    if (content == true)
+                        window.location = "/Account/Index";
+                    else {
+                        alert('error')
+                    }
+                },
+                error: function (e) { }
+            });
+        });
+
+
+
+    </script>

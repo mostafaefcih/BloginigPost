@@ -14,7 +14,7 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
         IBlogPostRepository BlogPostSchoolRepository { get; }
         //IRepository<BlogPost> BlogPostSchoolRepository { get; }
         IRepository<PostComment> PostCommentRepository { get; }
-        IRepository<Author> AuthorSchoolRepository { get; }
+        IRepository<ApplicationUser> ApplicationUserSchoolRepository { get; }
         IRepository<ProductLine> ProductLineSchoolRepository { get; }
         IRepository<ProductItem> ProductItemSchoolRepository { get; }
         void Save();
@@ -23,7 +23,7 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
     {
         private readonly IceCreamBlogContext _context = new IceCreamBlogContext();
 
-        private IRepository<Author> _authorSchoolRepository;
+        private IRepository<ApplicationUser> _applicationUserSchoolRepository;
         private IBlogPostRepository _blogPostSchoolRepository;
         private IRepository<PostComment> _PostCommentRepository;
         private IRepository<ProductLine> _productLineSchoolRepository;
@@ -53,15 +53,15 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
             }
         }
 
-        public IRepository<Author> AuthorSchoolRepository
+        public IRepository<ApplicationUser> ApplicationUserSchoolRepository
         {
             get
             {
-                if (this._authorSchoolRepository == null)
+                if (this._applicationUserSchoolRepository == null)
                 {
-                    this._authorSchoolRepository = new BaseRepository<Author>(this._context);
+                    this._applicationUserSchoolRepository = new BaseRepository<ApplicationUser>(this._context);
                 }
-                return _authorSchoolRepository;
+                return _applicationUserSchoolRepository;
             }
         }
 

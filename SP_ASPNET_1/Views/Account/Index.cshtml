@@ -1,0 +1,89 @@
+﻿@model  SP_ASPNET_1.ViewModels.Account.UserIndexVM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<table class="table">
+    <tr>
+
+        <th>
+            Sure name
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            User Name
+        </th>
+        <th>Roles</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var item in Model.Users.Results)
+    {
+<tr>
+
+    <td>
+        @Html.DisplayFor(modelItem => item.Surname)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Email)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.UserName)
+    </td>
+    <td>
+        @string.Join(",", Model.Roles.Where(r => r.Users.Any(u => u.UserId == item.Id)).Select(r => r.Name))
+    </td>
+    <td>
+        <a href="#" class="waves-effect waves-block edit-user" data-user-id="@item.Id" data-toggle="modal" data-target="#EdituserModal">Edit</a>
+        @*<a href="#" class="waves-effect waves-block delete-user" data-user-id="@item.Id">Delete</a>*@
+    </td>
+</tr>
+    }
+
+</table>
+<p>Page @(Model.Users.PageCount < Model.Users.CurrentPage ? 0 : Model.Users.CurrentPage) of @Model.Users.PageCount<p>
+
+    @for (var p = 1; p <= Model.Users.PageCount; p++)
+    {
+        <a href="@Url.Action("Index", new { page = p })" class="btn btn-default">@p</a>
+    }
+
+
+    @*@Html.PagedListPager(Model.Results.ToPagedList(Model.CurrentPage, Model.PageSize), page => Url.Action("Index",
+        new { page = Model.CurrentPage }))*@
+    <div class="modal fade" id="EdituserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+    @section Scripts{
+
+        <script>
+            $('.edit-user').click(function (e) {
+                var userId = $(this).attr("data-user-id");
+                var url = '/Account/ManageUserRoles?userId=' + userId;
+
+                e.preventDefault();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: 'application/html',
+                    success: function (content) {
+                        $('#EdituserModal div.modal-content').html(content);
+                    },
+                    error: function (e) { }
+                });
+            });
+           
+
+        </script>
+    }
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")

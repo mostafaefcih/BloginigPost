@@ -8,7 +8,7 @@ namespace SP_ASPNET_1.ViewModels
 {
     public class BlogSinglePostViewModel : IBlogViewModel
     {
-        public Author Author { get; set; }
+        public ApplicationUser Author { get; set; }
         public BlogPost BlogPost { get; set; }
     }
 }

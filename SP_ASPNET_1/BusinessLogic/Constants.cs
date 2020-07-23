@@ -15,9 +15,9 @@ namespace SP_ASPNET_1.BusinessLogic
 
         public static BlogPost FAKE_BLOGPOST => new BlogPost()
         {
-            Author = new Author()
+            Author = new ApplicationUser()
             {
-                AuthorID = -1,
+                Id = "-1",
                 Name = "FAKE",
                 Surname = "FAKE"
             },

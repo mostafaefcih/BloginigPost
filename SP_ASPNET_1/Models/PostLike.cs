@@ -14,11 +14,11 @@ namespace SP_ASPNET_1.Models
         [ForeignKey(nameof(Post))]
         public int PostId { get; set; }
         [ForeignKey(nameof(Author))]
-        public int AuthorId { get; set; }
+        public string AuthorId { get; set; }
 
 
         public BlogPost Post { get; set; }
-        public Author Author { get; set; }
+        public ApplicationUser Author { get; set; }
          public DateTime DateTime { get; set; }
 
 

@@ -1,13 +1,11 @@
-﻿using SP_ASPNET_1.DbFiles.UnitsOfWork;
+﻿using SP_ASPNET_1.BusinessLogic;
+using SP_ASPNET_1.DbFiles.UnitsOfWork;
 using SP_ASPNET_1.Models;
 using SP_ASPNET_1.ViewModels;
-using SP_ASPNET_1.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using WebGrease.Css.Visitor;
 
 namespace SP_ASPNET_1.DbFiles.Operations
 {
@@ -27,7 +25,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
 
         int UnlikePost(int userid, int PostId);
 
-       int CountPostsLikesPerAuther(int autherId);
+       int CountPostsLikesPerAuther(string autherId);
     }
     public class BlogPostOperations: IBlogPostOperations
     {
@@ -42,7 +40,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
         }
         public async Task<BlogIndexViewModel> GetBlogIndexViewModelAsync(int page, int pageSize)
         {
-            PagedResult<BlogPost> blogPosts = (await _unitOfWork.BlogPostSchoolRepository.GetAsync(null, b => b.OrderByDescending(d => d.DateTime), "Comments,Likes", page ,pageSize));
+            PagedResult<BlogPost> blogPosts = (await _unitOfWork.BlogPostSchoolRepository.GetAsync(null, b => b.OrderByDescending(d => d.DateTime), "Comments.Author,Likes", page ,pageSize));
 
             return new BlogIndexViewModel()
             {
@@ -76,7 +74,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
         {
             return _unitOfWork.BlogPostSchoolRepository.Get(filter: x => x.BlogPostID == id,
                     orderBy: null,
-                    includeProperties: "Author")
+                    includeProperties: "Author,Comments.Author,Likes")
                 .FirstOrDefault()
                 .ToBlogSinglePostViewModel();
         }
@@ -160,7 +158,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
 
         }
 
-        public int CountPostsLikesPerAuther(int autherId)
+        public int CountPostsLikesPerAuther(string autherId)
         {
             return _unitOfWork.BlogPostSchoolRepository.CountPostsLikesPerAuther(autherId);
         }
