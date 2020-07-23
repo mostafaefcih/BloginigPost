@@ -16,7 +16,7 @@ using System.Web.Security;
 
 namespace SP_ASPNET_1.Controllers
 {
-    //[RoutePrefix("Account")]
+    //[RoutePrefix("Account")]  
 
     public class AccountController : Controller
     {
