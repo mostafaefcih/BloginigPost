@@ -13,6 +13,8 @@ namespace SP_ASPNET_1.Controllers
     public class BlogPostController : Controller
     {
         private readonly IBlogPostOperations _blogPostOperations;//= new BlogPostOperations();
+        private static Dictionary<string, string> authers = new Dictionary<string, string>();
+
         public BlogPostController(IBlogPostOperations blogPostOperations)
         {
             _blogPostOperations = blogPostOperations;
@@ -23,6 +25,21 @@ namespace SP_ASPNET_1.Controllers
         {
             //return this.View();
             BlogIndexViewModel result = await this._blogPostOperations.GetBlogIndexViewModelAsync(page ,pageSize);
+            foreach (var item in result.BlogPosts.Results)
+            {
+                if (!authers.ContainsKey(item.AuthorID))
+                { 
+                    item.Author.AutherLikes = _blogPostOperations.CountPostsLikesPerAuther(item.AuthorID);
+                    authers.Add(item.AuthorID, item.Author.AutherLikes.ToString());
+                }
+                else
+                {
+                    var count = authers.FirstOrDefault(x=>x.Key== item.AuthorID).Value;
+                    item.Author.AutherLikes =Convert.ToInt32(count);
+
+                }
+
+            }
             ViewBag.Title = "Blog";
             return this.View(result);   
         }
