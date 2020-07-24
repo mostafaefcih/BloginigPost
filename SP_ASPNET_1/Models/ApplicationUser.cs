@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;add 
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -16,6 +17,8 @@ namespace SP_ASPNET_1.Models
         {
             return $"{this.Name} {this.Surname}";
         }
+          [NotMapped]
+        public int AutherLikes { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
 
         {
