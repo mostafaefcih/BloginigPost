@@ -16,6 +16,7 @@
                     <h6 class="card-title">
                         <a target="_blank" href='@Url.Action("SinglePost", new { id = @post.BlogPostID})' class="c-btn"> @(string.IsNullOrEmpty( post.Title)?"Load Details": post.Title)</a>
                     </h6>
+                    <h2>All Posts likes count @post.Author.AutherLikes</h2>
                     <p class="text-break">
                         @post.Content.Substring(0, 200)...
                     </p>
