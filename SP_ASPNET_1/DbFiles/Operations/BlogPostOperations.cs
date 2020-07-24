@@ -40,7 +40,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
         }
         public async Task<BlogIndexViewModel> GetBlogIndexViewModelAsync(int page, int pageSize)
         {
-            PagedResult<BlogPost> blogPosts = (await _unitOfWork.BlogPostSchoolRepository.GetAsync(null, b => b.OrderByDescending(d => d.DateTime), "Comments.Author,Likes", page ,pageSize));
+            PagedResult<BlogPost> blogPosts = (await _unitOfWork.BlogPostSchoolRepository.GetAsync(null, b => b.OrderByDescending(d => d.DateTime), "Comments.Author,Likes,Author", page ,pageSize));
 
             return new BlogIndexViewModel()
             {
